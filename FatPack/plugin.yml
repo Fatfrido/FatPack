@@ -1,0 +1,9 @@
+name: FatPack
+main: com.github.fatfrido.fatpack.FatPack
+version: 1.0
+commands:
+  day:
+    description: Der Morgen bricht an
+    usage: /day
+    permission: day.use
+    permission-message: Du kannst das Sonnensystem nicht beeinflussen!
