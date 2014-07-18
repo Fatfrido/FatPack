@@ -1,9 +1,14 @@
 name: FatPack
 main: com.github.fatfrido.fatpack.FatPack
 version: 1.0
+
+depend: [Vault]
+depend: [PermissionsEx]
+
 commands:
   day:
     description: Der Morgen bricht an
     usage: /day
+    aliases: [tag]
     permission: day.use
     permission-message: Du kannst das Sonnensystem nicht beeinflussen!
