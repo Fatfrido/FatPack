@@ -1,0 +1,34 @@
+# FatPack 1.0
+# Please take a look on http://dev.bukkit.org/bukkit-plugins/fatpack/ to learn how to
+#  use the config.yml . Feel free to send me a PM or leave a ticket so I can improve The FatPack!
+#  Thanks for supporting me and this plugin!
+config:
+  messages:
+    #switch the language of the plugin; file must exist in FatPack/lang
+    language: en 
+    #message shown to player wehen he joins
+    modt: This server runs &6The FatPack!
+    #do you want to create pre-configured groups with PermissionsEx?
+    createDefaultPerms: false
+  #when a player joins...
+  join:
+    #...at the first time...
+    once:
+      #give him:    can be disabled with leaving the value blank --> sword: 
+      tools:
+        sword: 272
+        shovel: 273
+        pickaxe: 274
+        axe: 275
+      armor:
+        helmet: 298
+        chest: 299
+        pants: 300
+        boots: 301
+    #give the player everyday when he joins on the server
+    everyday:
+      #an exp-bottle
+      EXP-Bottle: true
+      #some food; can be configured later
+      food:
+        amount: 3
