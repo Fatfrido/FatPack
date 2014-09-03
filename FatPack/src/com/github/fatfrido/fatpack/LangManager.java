@@ -17,7 +17,7 @@ public class LangManager {
     	String lang = null;
     	lang = plugin.getConfig().getString("config.messages.language");
     	if(lang == null){
-    		plugin.getLogger().info("&4No valid value in config: config.messages.language ! standard: en");
+    		plugin.getLogger().info("§4No valid value in config: config.messages.language ! standard: en");
     		ServerStop();
     	}
     	return lang;
@@ -37,7 +37,7 @@ public class LangManager {
     			}
     		}
     	}else{
-    		plugin.getLogger().info("Cannot find language files! example: en.yml");
+    		plugin.getLogger().info("§4Cannot find language files! example: en.yml");
     		ServerStop();
     		return null;
     	}
@@ -46,7 +46,7 @@ public class LangManager {
     
     public File GetRightMatch(ArrayList<File> matches, String name){
     	if(matches.size() > 1){
-    		plugin.getLogger().info("There are more than one Files with name: " + name + ".yml!");
+    		plugin.getLogger().info("§4There are more than one Files with name: " + name + ".yml!");
     		return null;
     	}else if(matches.size() == 0){
     		return null;
@@ -67,5 +67,21 @@ public class LangManager {
     	File langFile = GetRightMatch(matches, lang);
 		FileConfiguration langcfg = YamlConfiguration.loadConfiguration(langFile);
 		return langcfg;
+    }
+    
+    public String stringGetter(FileConfiguration lang, String path){
+    	String value = lang.getString(path);
+    	value = value.replaceAll("&", "§");
+    	value = value.replaceAll("%u", "ü");
+    	value = value.replaceAll("%o", "ö");
+    	value = value.replaceAll("%a", "ä");
+    	value = value.replaceAll("%sz", "&");
+    	if(value != null){
+    		return value;
+    	}else {
+    		String err = lang.getString("messages.general.logger.noTranslation");
+    		err = "§4" + err;
+    		return err;
+    	}
     }
 }

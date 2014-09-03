@@ -1,14 +1,20 @@
 name: FatPack
 main: com.github.fatfrido.fatpack.FatPack
 version: 1.0
+author: Fatfrido
 
-depend: [Vault]
-depend: [PermissionsEx]
+depend: [Vault, PermissionsEx]
 
 commands:
   day:
-    description: Der Morgen bricht an
-    usage: /day
+    description: Let a new day begin!
+    usage: /day <worldname>
     aliases: [tag]
     permission: day.use
-    permission-message: Du kannst das Sonnensystem nicht beeinflussen!
+  buy:
+    description: Use your money to buy something.
+    usage: /buy certificate <certificatename>
+    permission: buy.certificate
+  certificate:
+    description: All about certificates
+    aliases: [certificates]

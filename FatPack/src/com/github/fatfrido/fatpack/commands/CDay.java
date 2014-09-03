@@ -1,7 +1,6 @@
 package com.github.fatfrido.fatpack.commands;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -18,11 +17,11 @@ public class CDay implements CommandExecutor{
 	static JavaPlugin plugin = FatPack.getPlugin(FatPack.class);
 
 	@Override
-	public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args) {
+	public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args){
 		
-		LangManager langManager = new LangManager();
-		FileConfiguration lang = langManager.langFileApp();
-		String path1 = "messages.commands.day";
+		LangManager lm = new LangManager();
+		FileConfiguration lang = lm.langFileApp();
+		String path1 = "messages.commands.day.";
 		
 		Player player = null;
 		if (cs instanceof Player) {
@@ -32,20 +31,47 @@ public class CDay implements CommandExecutor{
 			if(player == null){
 				if(args.length == 1){
 					String argworld = args[0];
-					World world = Bukkit.getServer().getWorld(argworld);
-					world.setTime(24000);
-					plugin.getServer().broadcastMessage(lang.getString(path1 + ".console"));
-					return true;
+					World world = Bukkit.getWorld(argworld);
+					if(world != null){
+						world.setTime(24000);
+						plugin.getServer().broadcastMessage(lm.stringGetter(lang, path1 + "console"));
+						return true;
+					}else {
+						cs.sendMessage(lm.stringGetter(lang, path1 + "worldNotFound"));
+						return false;
+					}
 				}else if(args.length < 1){
-					cs.sendMessage(ChatColor.RED + "Argument fehlt! " + ChatColor.GRAY +"/" + cmd.getName() + " <Weltname>");
+					cs.sendMessage(lm.stringGetter(lang, path1 + "tooFewArgs"));
 					return false;
 				}else {
-					cs.sendMessage(ChatColor.RED + "zu viele Argumente! " + ChatColor.GRAY +"/" + cmd.getName() + " <Weltname>");
+					cs.sendMessage(lm.stringGetter(lang, path1 + "tooManyArgs"));
+					return false;
 				}
 			}else {
-				player.getWorld().setTime(24000);
-				this.plugin.getServer().broadcastMessage(ChatColor.GOLD + "Dank " + ChatColor.RED + player.getName() + ChatColor.GOLD + " beginnt ein neuer Tag!");
-				return true;
+				if(player.hasPermission("day.use")){
+					if(args.length == 1){
+						String argworld = args[0];
+						World world = Bukkit.getWorld(argworld);
+						if(world != null){
+							world.setTime(24000);
+							plugin.getServer().broadcastMessage(lm.stringGetter(lang, path1 + "player"));
+							return true;
+						}else {
+							cs.sendMessage(lm.stringGetter(lang, path1 + "worldNotFound"));
+							return false;
+						}
+					}else if(args.length < 1){
+						player.getWorld().setTime(24000);
+						Bukkit.getServer().broadcastMessage(lm.stringGetter(lang, path1 + "player"));
+						return true;
+					}else {
+						player.sendMessage(lm.stringGetter(lang, path1 + "tooManyArgs"));
+						return false;
+					}
+				}else {
+					player.sendMessage(lm.stringGetter(lang, path1 + "permission"));
+					return false;
+				}
 			}
 		}
 		return false;
