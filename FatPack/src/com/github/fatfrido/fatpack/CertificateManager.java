@@ -6,12 +6,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import ru.tehkode.permissions.PermissionUser;
@@ -20,11 +25,11 @@ import ru.tehkode.permissions.bukkit.PermissionsEx;
 public class CertificateManager {
 	
 	static JavaPlugin plugin = FatPack.getPlugin(FatPack.class);
-	private Map<String, String> certName = new HashMap<String, String>();
-	private Map<String, Double> certPrice = new HashMap<String, Double>();
-	private Map<String, List<String>> certReq = new HashMap<String, List<String>>();
-	private Map<String, ArrayList<String>> certDesc = new HashMap<String, ArrayList<String>>();
-	private Map<String, List<String>> certPerms = new HashMap<String, List<String>>();
+	private static Map<String, String> certName = new HashMap<String, String>();
+	private static Map<String, Double> certPrice = new HashMap<String, Double>();
+	private static Map<String, List<String>> certReq = new HashMap<String, List<String>>();
+	private static Map<String, String> certDesc = new HashMap<String, String>();
+	private static Map<String, List<String>> certPerms = new HashMap<String, List<String>>();
 	
 	public void certificateManager(){
 		List<String> tnt = Arrays.asList("tnt.place");
@@ -104,8 +109,18 @@ public class CertificateManager {
     		return cert;
     	}
     }
+    
+    public File getCertFile(String certificate){
+    	ArrayList<File> matches = CheckCertificate(plugin.getDataFolder(), certificate);
+    	File file = GetRightMatch(matches, certificate);
+    	if(file == null){
+    		return null;
+    	}else {
+    		return file;
+    	}
+    }
 	
-	public void createCertificate(String certificate, double price, List<String> req, ArrayList<String> desc, List<String> perms){
+	public void createCertificate(String certificate, double price, List<String> req, String desc, List<String> perms){
 		LangManager lm = new LangManager();
 		FileConfiguration lang = lm.langFileApp();
 		String path1 = "certificates.";
@@ -156,15 +171,13 @@ public class CertificateManager {
 				if(!certs.contains(required.get(i).toLowerCase())){
 					player.sendMessage(lm.stringGetter(lang, path2 + "missingRequired") + required);
 					return true;
-				}else {
-					certs.add(certificate.toLowerCase());
-					pd.set(path1, certs);
-					PlayerManager.savePlayerData(pd, player);
 				}
 			}
-			
+			certs.add(certificate.toLowerCase());
+			pd.set(path1, certs);
+			PlayerManager.savePlayerData(pd, player);
+			return true;
 		}
-		return true;
 	}
 	
 	public boolean hasCertificate(String certificate, Player player){
@@ -244,11 +257,11 @@ public class CertificateManager {
 	}
 	
 	public int newCertificate(String name){
-		if(getCertificate(name) == null){
+		if(!(certName.containsKey(name))){
 			certName.put(name, name);
 			return 0;
 		}else if(certName.containsKey(name) && certPrice.containsKey(name) && certReq.containsKey(name) && certDesc.containsKey(name) && certPerms.containsKey(name)){
-			createCertificate(name, certPrice.get(name), certReq.get(name), certDesc.get(name), certPerms.get(name));
+			createCertificate(name, certPrice.get(name), certReq.get(name), certDesc.get(name).toString(), certPerms.get(name));
 			return 1;
 		}else {
 			return 2;
@@ -261,7 +274,13 @@ public class CertificateManager {
 			certPrice.put(name, price);
 		}else {
 			FileConfiguration cert = getCertificate(name);
+			File file = getCertFile(name);
 			cert.set("price", price);
+			try {
+				cert.save(file);
+			}catch(IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -270,7 +289,13 @@ public class CertificateManager {
 			certReq.put(name, req);
 		}else {
 			FileConfiguration cert = getCertificate(name);
+			File file = getCertFile(name);
 			cert.set("requirements", req);
+			try {
+				cert.save(file);
+			}catch(IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -279,16 +304,93 @@ public class CertificateManager {
 			certPerms.put(name, perms);
 		}else {
 			FileConfiguration cert = getCertificate(name);
+			File file = getCertFile(name);
 			cert.set("permissions", perms);
+			try {
+				cert.save(file);
+			}catch(IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
 	public void editDesc(String name, ArrayList<String> desc){
+		StringBuilder sb = new StringBuilder();
+		for(String str : desc){
+			sb.append(str);
+			sb.append(" ");
+		}
+		String description = sb.toString();
 		if(getCertificate(name) == null){
-			certDesc.put(name, desc);
+			certDesc.put(name, description);
 		}else {
 			FileConfiguration cert = getCertificate(name);
-			cert.set("description", desc);
+			File file = getCertFile(name);
+			cert.set("description", description);
+			try {
+				cert.save(file);
+			}catch(IOException e) {
+				e.printStackTrace();
+			}
 		}
+	}
+	
+	public void printCertificate(String certificate, Player player){
+		LangManager lm = new LangManager();
+		FileConfiguration lang = lm.langFileApp();
+		String path1 = "certificates.";
+		String path2 = "certificates.printed.";
+		if(hasCertificate(certificate, player) == true){
+			if(player.getInventory().firstEmpty() == -1){
+				player.sendMessage(lm.stringGetter(lang, path1 + "fullInv"));
+			}else {
+				FileConfiguration certData = getCertificate(certificate);
+				PlayerInventory inv = player.getInventory();
+				ItemStack cert = new ItemStack(Material.WRITTEN_BOOK);
+				BookMeta meta = (BookMeta) cert.getItemMeta();
+				String price = String.valueOf(certData.getInt("price"));
+				meta.setAuthor(player.getName());
+				meta.setTitle(certificate.toUpperCase());
+				String divider = lm.stringGetter(lang, path2 + "divider");
+				String pr = lm.stringGetter(lang, path2 + "price");
+				String req = lm.stringGetter(lang, path2 + "requirements");
+				String desc = lm.stringGetter(lang, path2 + "description");
+				String perms = lm.stringGetter(lang, path2 + "permissions");
+				meta.setPages("", "", "");
+				meta.setPage(1, pr + "\n"+ divider + price + "\n\n" + req + "\n" + divider + reqToString(certificate));
+				meta.setPage(2, desc + "\n" + divider + certData.getString("description"));
+				meta.setPage(3, perms + "\n" + divider + permsToString(certificate));
+				meta.setDisplayName(lm.stringGetter(lang, path2 + "title") + certificate.toUpperCase());
+				meta.setLore(certData.getStringList("permissions"));
+				cert.setItemMeta(meta);
+				inv.addItem(cert);
+			}
+		}else {
+			player.sendMessage(lm.stringGetter(lang, path1 + "messages.notHas"));
+		}
+	}
+	
+	public String reqToString(String certificate){
+		FileConfiguration cert = getCertificate(certificate);
+		List<String> data = cert.getStringList("requirements");
+		StringBuilder sb = new StringBuilder();
+		for(String str : data){
+			sb.append(str);
+			sb.append("\n");
+		}
+		String req = sb.toString();
+		return req;
+	}
+	
+	public String permsToString(String certificate){
+		FileConfiguration cert = getCertificate(certificate);
+		List<String> data = cert.getStringList("permissions");
+		StringBuilder sb = new StringBuilder();
+		for(String str : data){
+			sb.append(str);
+			sb.append("\n");
+		}
+		String perms = sb.toString();
+		return perms;
 	}
 }

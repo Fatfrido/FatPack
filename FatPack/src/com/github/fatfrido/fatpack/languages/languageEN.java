@@ -42,6 +42,7 @@ public class languageEN {
 		encfg.addDefault(pathcerts + "messages.missingRequired", "&4You do not have the required certificate to buy this one! Missing certificate: &7");
 		encfg.addDefault(pathcerts + "messages.invalidCertificate", "&4This certificate does not exist!");
 		encfg.addDefault(pathcerts + "messages.hasAlready", "&7You already have this certificate!");
+		encfg.addDefault(pathcerts + "messages.notHas", "&4You do not own this certificate!");
 		encfg.addDefault(pathcerts + "messages.gotCertificate", "&7Congratulations, You have just got a new certificate: &6");
 		encfg.addDefault(pathcerts + "tnt", "This certificate allows the owner to use TNT for mining operations. It is not allowed "
 				+ "to blow up buildings. A valid mining license is required.");
@@ -49,6 +50,14 @@ public class languageEN {
 		encfg.addDefault(pathcerts + "mining", "As the owner of this certificate you are allowed to create mines and gather ressources there. "
 				+ "Deep-mining is not included, it is still forbidden for you!");
 		encfg.addDefault(pathcerts + "deepmining", "With this certificate you are allowed to mine in the deepest layers of the world. This is the best way to find diamonds!");
+		
+		String pathpcerts = "certificates.printed.";
+		encfg.addDefault(pathpcerts + "title", "&7CERTIFICATE: &6");
+		encfg.addDefault(pathpcerts + "divider", "-------------------");
+		encfg.addDefault(pathpcerts + "price", "PRICE");
+		encfg.addDefault(pathpcerts + "requirements", "REQUIREMENTS");
+		encfg.addDefault(pathpcerts + "description", "DESCRIPTION");
+		encfg.addDefault(pathpcerts + "permissions", "PERMISSIONS");
 		
 		String pathcbuy = "messages.commands.buy.";
 		encfg.addDefault(pathcbuy + "notPlayer", "&4Only a player can use this command!");
@@ -69,6 +78,10 @@ public class languageEN {
 		encfg.addDefault(pathccertificates + "createend", "&7Your certificate has been created!");
 		encfg.addDefault(pathccertificates + "enternumber", "&4Please enter a number!");
 		encfg.addDefault(pathccertificates + "existsalready", "&4The certificate exists already!");
+		encfg.addDefault(pathccertificates + "fullInv", "&4Your inventory is full!");
+		encfg.addDefault(pathccertificates + "usageEdit", "&7/certificate edit <price|requirements|description|permissions> <certificate-name> <value>");
+		encfg.addDefault(pathccertificates + "usageCreate", "&7/certificate create   Starts the creation-guide");
+		encfg.addDefault(pathccertificates + "edited", "You have successfully edited the &6");
 		
 		encfg.options().copyDefaults(true);
 		try {

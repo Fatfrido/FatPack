@@ -17,6 +17,7 @@ public class CCertificate implements CommandExecutor{
 	static FileConfiguration lang = lm.langFileApp();
 	static String path1 = "messages.commands.buy.";
 	static String path2 = "messages.commands.certificates.";
+	static String path3 = "certificates.printed.";
 
 	@SuppressWarnings("null")
 	@Override
@@ -40,6 +41,55 @@ public class CCertificate implements CommandExecutor{
 						cs.sendMessage(lm.stringGetter(lang, path2 + "playernotfound"));
 						return false;
 					}
+				}else if(args[0].equalsIgnoreCase("print")){
+					if(cs == player){
+						cm.printCertificate(args[1], player);
+						return true;
+					}else {
+						cs.sendMessage(lm.stringGetter(lang, path1 + "notPlayer"));
+					}
+				}else if(args[0].equalsIgnoreCase("edit")){
+					if(args.length > 3){
+						if(args[1].equalsIgnoreCase("price")){
+							cm.editPrice(args[2], Integer.valueOf(args[3]));
+							cs.sendMessage( "§7[§6" + args[2].toUpperCase() + "§7]" + lm.stringGetter(lang, path2 + "edited") + lm.stringGetter(lang, path3 + "price"));
+							return true;
+						}else if(args[1].equalsIgnoreCase("requirements")){
+							List<String> req = new ArrayList<String>();
+							if(!(args[3].equalsIgnoreCase("null"))){
+								for(int i = 3; i < args.length; i++){
+									req.add(args[i]);
+								}
+							}	
+							cm.editReqirements(args[2], req);
+							cs.sendMessage( "§7[§6" + args[2].toUpperCase() + "§7]" + lm.stringGetter(lang, path2 + "edited") + lm.stringGetter(lang, path3 + "requirements"));
+							return true;
+						}else if(args[1].equalsIgnoreCase("description")){
+							ArrayList<String> desc = new ArrayList<String>();
+							for(int i = 3; i < args.length; i++){
+								desc.add(args[i]);
+							}
+							cm.editDesc(args[2], desc);
+							cs.sendMessage( "§7[§6" + args[2].toUpperCase() + "§7]" + lm.stringGetter(lang, path2 + "edited") + lm.stringGetter(lang, path3 + "description"));
+							return true;
+						}else if(args[1].equalsIgnoreCase("permissions")){
+							List<String> perms = new ArrayList<String>();
+							for(int i = 3; i < args.length; i++){
+								perms.add(args[i]);
+							}
+							cm.editPerms(args[2], perms);
+							cs.sendMessage( "§7[§6" + args[2].toUpperCase() + "§7]" + lm.stringGetter(lang, path2 + "edited") + lm.stringGetter(lang, path3 + "permissions"));
+							return true;
+						}else {
+							cs.sendMessage(lm.stringGetter(lang, path2 + "usageEdit"));
+							return true;
+						}
+					}else {
+						cs.sendMessage(lm.stringGetter(lang, path1 + "tooFewArgs"));
+						cs.sendMessage(lm.stringGetter(lang, path2 + "usageEdit"));
+						return false;
+					}
+					
 				}else if(args[0].equalsIgnoreCase("create")){
 					if(args.length < 3){
 						cs.sendMessage(lm.stringGetter(lang, path2 + "createname"));
@@ -51,6 +101,7 @@ public class CCertificate implements CommandExecutor{
 								return true;
 							}else if(cm.newCertificate(args[2]) == 1){
 								cs.sendMessage(lm.stringGetter(lang, path2 + "createend"));
+								return true;
 							}else {
 								cs.sendMessage(lm.stringGetter(lang, path2 + "existsalready"));
 								return false;
@@ -68,16 +119,18 @@ public class CCertificate implements CommandExecutor{
 								return true;
 							}
 						}else if(args[1].equalsIgnoreCase("requirements")){
-							List<String> req = null;
-							for(int i = 4; i < args.length; i++){
-								req.add(args[i]);
-							}
+							List<String> req = new ArrayList<String>();
+							if(!(args[3].equalsIgnoreCase("null"))){
+								for(int i = 3; i < args.length; i++){
+									req.add(args[i]);
+								}
+							}	
 							cm.editReqirements(args[2], req);
 							cs.sendMessage(lm.stringGetter(lang, path2 + "createperms"));
 							return true;
 						}else if(args[1].equalsIgnoreCase("perms")){
 							List<String> perms = new ArrayList<String>();
-							for(int i = 4; i < args.length; i++){
+							for(int i = 3; i < args.length; i++){
 								perms.add(args[i]);
 							}
 							cm.editPerms(args[2], perms);
@@ -85,7 +138,7 @@ public class CCertificate implements CommandExecutor{
 							return true;	
 						}else if(args[1].equalsIgnoreCase("desc")){
 							ArrayList<String> desc = new ArrayList<String>();
-							for(int i = 4; i < args.length; i++){
+							for(int i = 3; i < args.length; i++){
 								desc.add(args[i]);
 							}
 							cm.editDesc(args[2], desc);
